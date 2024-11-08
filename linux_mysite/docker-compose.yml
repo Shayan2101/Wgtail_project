@@ -1,0 +1,43 @@
+# version: "3.9"
+
+services:
+  db:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      - POSTGRES_DB=wagatil_database
+      - POSTGRES_USER=Shayan
+      - POSTGRES_PASSWORD=1694
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+
+  web:
+    build: .   # If you want to create a new image uncomment the <image:> line then enter a new name for image in the next line
+    container_name: wagtail_container
+    # image: my-wagtail-image
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    environment:
+      - POSTGRES_NAME=wagatil_database
+      - POSTGRES_USER=Shayan
+      - POSTGRES_PASSWORD=1694
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+volumes:
+  db-data:
